@@ -33,7 +33,7 @@ WORKDIR /prog
 ENTRYPOINT ["python","cmd.py"]
 CMD []
 ```
-The McCoy Platform will be able to execute your algorithm as if it were running `$ python cmd.py` from a shell.
+The EnvoyAI Platform will be able to execute your algorithm as if it were running `$ python cmd.py` from a shell.
 
 ### 2 Schemas
 The __LABELs__ define the required schemas and metadata with JSON or YAML.
@@ -99,7 +99,7 @@ LABEL mccoy.info "{ \
 In the future this metadata will be searchable if you agree to make the algorithm publicly available.
 
 ### 5 CUDA
-The McCoy Platform supports CUDA 8 and CudNN 5. If you require a different version, please contact us and we will 
+The EnvoyAI Platform supports CUDA 8 and CudNN 5. If you require a different version, please contact us and we will 
 find a way to set it up for you.
 
 Use the __LABEL__ `mccoy.nvidia` to toggle on CUDA support.
@@ -107,7 +107,7 @@ Use the __LABEL__ `mccoy.nvidia` to toggle on CUDA support.
 LABEL mccoy.nvidia True
 ```
 
-You will likely want to base your Docker image off of an nvidia example.
+You will likely want to base your Docker image off of an Nvidia example.
 ```Dockerfile
 FROM nvidia/cuda:8.0-cudnn5-runtime-ubuntu14.04
 ```

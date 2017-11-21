@@ -15,17 +15,16 @@ how they can be used to gather and display a rich set of data
 ##### YAML
 
 First an aside about YAML - Each of the JSON metadata fields (`mccoy.schema_in`,`mccoy.schema_out`,`mccoy.info`)
-can be specified with JSON, as they have been in each precceding example, or with YAML (a superset of JSON that 
-allows us to drop a lot of the cumbersome symbols). This is useful for this example because our schemas become 
-quite lengthy, and the additional readability goes a long way. The one catch is because the way Dockerfile labels
-capture strings, one must explicitly insert newlines `\n`. See test/echo's [Dockerfile](Dockerfile) for examples. 
+can be specified with JSON, as they have been in each preceeding example, or with YAML (a superset of JSON that 
+is intuitively simpler).  Choosing YAML may make the most sense as schemas grow to greater complexity and readability matters.
+Please note that you must explicitly insert newlines `\n` to represent continuation for a label in the Dockerfile.
+See test/echo's [Dockerfile](Dockerfile) for examples. 
 
 ## 1 Files
 
-About working with files - Accepting files as input and writing files as output is very simple.
-Despite the fact that the 'McCoy Integration API' can run over Web API where files need to be transcoded to and from
-strings, files can be read and written normally, and any concern about transmission can be safely left up to the 
-'McCoy Platform'. As a simple demonstration, the code below reads an image and modifies it by adding text. 
+The EnvoyAI Platform is designed to securely handle input and output of files representing data/images.  File handling
+integration from your organization is with well established HTTP/HTTPS protocols to the EnvoyAI Platform.  
+The integration API addresses all the encoding and transcoding work.  As a simple demonstration, the code below reads an image and modifies it by adding text. 
 The input file `/mccoy/input/image.png` can be read normally, and the `image.png` property of the output will 
 automatically assume the value of the file written to `/mccoy/input/image.png`.
 ```python
@@ -40,9 +39,9 @@ image.save('/mccoy/output/image.png','PNG')
 
 ## 2 Input
 
-In practice, all inputs defined by your algorithms `mccoy.schema_in` will be supplied via JSON over WebAPI via the 
-'McCoy Integration API', and one should not be too concerned with the exact user interface, as it may need to vary 
-system to system, or client to client. However for testing and demonstration purposes, at https://secure.mccoymed.com 
+In practice, all inputs defined by your algorithms `mccoy.schema_in` will be supplied via JSON over HTTP/HTTPS via the 
+'EnvoyAI Integration API'.  The web user interface experience is currently kept simple as it is dynamically generated and will vary
+depending up system-to-system and client-to-client needs.  In the future this can be greatly customized.  However for testing and demonstration purposes, at https://secure.mccoymed.com 
 we dynamically render input controls for any input type.
 
 ### 2.1 Simple Inputs
@@ -64,12 +63,12 @@ we dynamically render input controls for any input type.
 |Dicom      |`bytes`              |`test.jpg: {type: 'string', format: 'base64', title: 'test.dcm', _mime-type: 'image/dcm', '_control': 'file'}`               |![File](screenshots/input/dicom.gif)           |
 
 #### 2.1.2 Reading values
-Reading any of the above inputs from the provided files in the `/mccoy/input/` directory is strait forward. For example:
+Reading any of the above inputs from the provided files in the `/mccoy/input/` directory is straightforward. For example:
 ```python
 with open('/mccoy/input/test-string','r') as file_in:
     test_string = file_in.read()
 ```
-when using DateTime, Boolean, Integer, Float or Percentage the transformation step to convert the string into the
+when using DateTime, Boolean, Integer, Float or Percentage data types, the transformation step to convert the string into the
 correct data type should be trivial in any programming language. Some example code:
 ```python
 from dateutil import parser as dateutil_parser
@@ -166,10 +165,10 @@ for example `array-name/0/test-int` would contain the value of the `test-int` pr
 array named `array-name`.
 ## 3 Output
 
-Similar to what has been stated above about inputs, all outputs defined by your algorithms `mccoy.schema_out` 
-will be supplied via JSON over WebAPI via the 'McCoy Integration API', and one should not be too concerned with the
-exact user interface, as it may need to vary  system to system, or client to client. However for testing and 
-demonstration purposes, at https://secure.mccoymed.com we dynamically render outputs controls for any output type.
+Similar to what has been stated above regarding inputs, all outputs defined by your algorithms `mccoy.schema_out` 
+will be presented as JSON via the 'EnvoyAI Integration API' over HTTP/HTTPS.  Again, one should not be too concerned with the
+exact user interface, as it may need to vary system-to-system and client-to-client. However for testing and 
+demonstration purposes, at https://secure.mccoymed.com the output controls are rendered dynamically and supports any output type.
 
 ### 3.1 Simple Outputs
 
@@ -185,7 +184,8 @@ demonstration purposes, at https://secure.mccoymed.com we dynamically render out
 |Percentage |ex. `12%` &#124; .12 |`test-percentage: {type: 'number', format: 'percentage', title: 'test-percentage'}`                     |![Percentage](screenshots/output/percentage.gif)|
 |File       |`bytes`              |`test.zip: {type: 'string', format: 'base64', title: 'test.zip', _mime-type: 'application/octet-stream'`|![File](screenshots/output/file.gif)            |
 |Image      |`bytes`              |`test.jpg: {type: 'string', format: 'base64', title: 'test.jpg', _mime-type: 'image/jpg'}`              |![File](screenshots/output/image.gif)           |
-Writing any of the above inputs to the output directory `/mccoy/output/` directory is strait forward. For example:
+
+Writing any of the above inputs to the output directory `/mccoy/output/` directory is straightforward. For example:
 ```python
 test_string = "hello world"
 with open('/mccoy/output/test-string','w') as file_out:
@@ -206,7 +206,7 @@ percentage_value= 0.85
 # example strings
 date_string = date_value.isoformat()
 bool_string = str(bool_value)
-int_string = int(int_value)
+int_string = str(int_value)
 float_string = str(float_value)
 percentage_string = float(percentage_value*100)+'%'
 
@@ -226,12 +226,12 @@ with open('/mccoy/output/test-date','w') as date_out, \
 ### 2.2 Nested Object Outputs
 
 Nested object output follows all of the conventions outlined in [Nested Object Input](#22-nested-object-inputs); 
-simply create a directory in `/mccoy/output` and put files with property values in the directory.
+simply create a directory in `/mccoy/output` and place files named with property values in the directory.
 
 ### 3.3 Array Inputs
 
 [Arrays](#23-array-inputs)
 
 Nested object output follows all of the conventions outlined in [Array Input](#23-array-inputs); 
-simply create a directory in `/mccoy/output` and put files or directories named by index with 
+simply create a directory in `/mccoy/output` and place files or directories named by index with 
 property values in the directory.
